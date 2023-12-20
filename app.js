@@ -1,7 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const routes = require("./routes/users");
+const userRouter = require("./routes/users");
+const cardsRouter = require("./routes/cards");
 
 const { PORT = 3000 } = process.env;
 
@@ -20,7 +21,8 @@ const tempUserIdInsertion = (req, res, next) => {
 app.use(tempUserIdInsertion);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use("/", routes);
+app.use("/users", userRouter);
+app.use("/cards", cardsRouter);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
