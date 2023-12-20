@@ -28,18 +28,34 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUserInfo = (req, res) => {
   const { name, about } = req.body;
-  User.create({ name, about })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    {
+      new: true,
+      runValidators: true,
+      select: { name, about },
+    }
+  )
     .then((user) => res.send({ data: user }))
     .catch((error) =>
       res.status(500).send({ message: `Произошла ошибка: ${error}` })
     );
 };
 
-module.exports.updateUseAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  // User.create({  avatar })
-  //   .then((user) => res.send({ data: user }))
-  //   .catch((error) =>
-  //     res.status(500).send({ message: `Произошла ошибка: ${error}` })
-  //   );
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    {
+      new: true,
+      runValidators: true,
+      select: { avatar },
+    }
+  )
+    .then((user) => res.send({ data: user }))
+    .catch((error) =>
+      res.status(500).send({ message: `Произошла ошибка: ${error}` })
+    );
 };
