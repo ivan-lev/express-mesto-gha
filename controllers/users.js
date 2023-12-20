@@ -1,4 +1,4 @@
-const User = require("../models/users");
+const User = require("../models/user");
 
 module.exports.getUserList = (req, res) => {
   User.find({})
@@ -24,4 +24,22 @@ module.exports.createUser = (req, res) => {
     .catch((error) =>
       res.status(500).send({ message: `Произошла ошибка: ${error}` })
     );
+};
+
+module.exports.updateUserInfo = (req, res) => {
+  const { name, about } = req.body;
+  User.create({ name, about })
+    .then((user) => res.send({ data: user }))
+    .catch((error) =>
+      res.status(500).send({ message: `Произошла ошибка: ${error}` })
+    );
+};
+
+module.exports.updateUseAvatar = (req, res) => {
+  const { avatar } = req.body;
+  // User.create({  avatar })
+  //   .then((user) => res.send({ data: user }))
+  //   .catch((error) =>
+  //     res.status(500).send({ message: `Произошла ошибка: ${error}` })
+  //   );
 };
