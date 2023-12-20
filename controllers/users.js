@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const User = require("../models/users");
 
 module.exports.getUserList = (req, res) => {
   User.find({})
