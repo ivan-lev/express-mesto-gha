@@ -16,7 +16,11 @@ module.exports.getUserById = (req, res) => {
     .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((error) => {
-      if (error.name === "CastError") {
+      if (error.name === "DocumentNotFoundError") {
+        res.status(400).send({
+          message: `Передан некорректный _id пользователя.`,
+        });
+      } else if (error.name === "CastError") {
         res.status(404).send({
           message: `Пользователь с таким _id не найден.`,
         });
@@ -55,15 +59,14 @@ module.exports.updateUserInfo = (req, res) => {
 
   User.findByIdAndUpdate(
     owner,
-    { name, about },
+    { name: name, about: about },
     {
       new: true,
       runValidators: true,
-      select: { name, about },
     }
   )
     .orFail()
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((error) => {
       if (error.name === "ValidationError") {
         res.status(400).send({
@@ -93,7 +96,7 @@ module.exports.updateUserAvatar = (req, res) => {
     }
   )
     .orFail()
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((error) => {
       if (error.name === "ValidationError") {
         res.status(400).send({
