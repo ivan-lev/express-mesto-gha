@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const userRouter = require("./routes/users");
 const cardsRouter = require("./routes/cards");
+const pageNotFound = require("./routes/page-not-found");
 
 const { PORT = 3000 } = process.env;
 
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use("/users", userRouter);
 app.use("/cards", cardsRouter);
+app.use("*", pageNotFound);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
