@@ -5,7 +5,7 @@ module.exports.getUserList = (req, res) => {
   User.find({}, {
     _id: 1, name: 1, about: 1, avatar: 1,
   })
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((error) => {
       res.status(500).send({
         message: `Произошла ошибка получения списка пользователей. Детали: ${error.message}`,
@@ -18,7 +18,7 @@ module.exports.getUserById = (req, res) => {
     _id: 1, name: 1, about: 1, avatar: 1,
   })
     .orFail()
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(400).send({
@@ -74,7 +74,7 @@ module.exports.updateUserInfo = (req, res) => {
     },
   )
     .orFail()
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status(400).send({
@@ -104,7 +104,7 @@ module.exports.updateUserAvatar = (req, res) => {
     },
   )
     .orFail()
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status(400).send({

@@ -2,7 +2,7 @@ const Card = require('../models/card');
 
 module.exports.getCardsList = (req, res) => {
   Card.find({})
-    .then((cards) => res.status(200).send({ data: cards }))
+    .then((cards) => res.send({ data: cards }))
     .catch((error) => {
       res.status(500).send({
         message: `Произошла ошибка получения карточек. Детали: ${error.message}`,
@@ -53,7 +53,7 @@ module.exports.likeCard = (req, res) => {
   )
     .orFail()
     .then((card) => {
-      res.status(200).send({ data: card });
+      res.send({ data: card });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -75,7 +75,7 @@ module.exports.dislikeCard = (req, res) => {
     { new: true },
   )
     .orFail()
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => res.send({ data: card }))
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(400).send({ message: 'Передан некорректный _id карточки' });
