@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const userRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const pageNotFound = require('./routes/page-not-found');
@@ -22,6 +23,7 @@ const tempUserIdInsertion = (req, res, next) => {
 app.use(tempUserIdInsertion);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(helmet());
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
 app.use('*', pageNotFound);
