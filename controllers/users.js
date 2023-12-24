@@ -1,8 +1,10 @@
-const User = require("../models/user");
+const User = require('../models/user');
 
 module.exports.getUserList = (req, res) => {
   // найти всех пользователей и вернуть определённые поля
-  User.find({}, { _id: 1, name: 1, about: 1, avatar: 1 })
+  User.find({}, {
+    _id: 1, name: 1, about: 1, avatar: 1,
+  })
     .then((user) => res.status(200).send({ data: user }))
     .catch((error) => {
       res.status(500).send({
@@ -12,17 +14,19 @@ module.exports.getUserList = (req, res) => {
 };
 
 module.exports.getUserById = (req, res) => {
-  User.findById(req.params.userId, { _id: 1, name: 1, about: 1, avatar: 1 })
+  User.findById(req.params.userId, {
+    _id: 1, name: 1, about: 1, avatar: 1,
+  })
     .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((error) => {
-      if (error.name === "CastError") {
+      if (error.name === 'CastError') {
         res.status(400).send({
-          message: `Пользователь с таким _id не найден.`,
+          message: 'Пользователь с таким _id не найден.',
         });
-      } else if (error.name === "DocumentNotFoundError") {
+      } else if (error.name === 'DocumentNotFoundError') {
         res.status(404).send({
-          message: `Передан некорректный _id пользователя.`,
+          message: 'Передан некорректный _id пользователя.',
         });
       } else {
         res.status(500).send({
@@ -38,12 +42,16 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => {
       const userId = user._id.toString();
-      res.status(201).send({ data: { name, about, avatar, _id: userId } });
+      res.status(201).send({
+        data: {
+          name, about, avatar, _id: userId,
+        },
+      });
     })
     .catch((error) => {
-      if (error.name === "ValidationError") {
+      if (error.name === 'ValidationError') {
         res.status(400).send({
-          message: `При создании пользователя переданы невалидные данные.`,
+          message: 'При создании пользователя переданы невалидные данные.',
         });
       } else {
         res.status(500).send({
@@ -59,22 +67,22 @@ module.exports.updateUserInfo = (req, res) => {
 
   User.findByIdAndUpdate(
     owner,
-    { name: name, about: about },
+    { name, about },
     {
       new: true,
       runValidators: true,
-    }
+    },
   )
     .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((error) => {
-      if (error.name === "ValidationError") {
+      if (error.name === 'ValidationError') {
         res.status(400).send({
-          message: `При обновлении профиля переданы невалидные данные.`,
+          message: 'При обновлении профиля переданы невалидные данные.',
         });
-      } else if (error.name === "CastError") {
+      } else if (error.name === 'CastError') {
         res.status(404).send({
-          message: `Пользователь с таким _id не найден.`,
+          message: 'Пользователь с таким _id не найден.',
         });
       } else {
         res.status(500).send({
@@ -93,18 +101,18 @@ module.exports.updateUserAvatar = (req, res) => {
       new: true,
       runValidators: true,
       select: { avatar },
-    }
+    },
   )
     .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((error) => {
-      if (error.name === "ValidationError") {
+      if (error.name === 'ValidationError') {
         res.status(400).send({
-          message: `При обновлении аватара переданы невалидные данные.`,
+          message: 'При обновлении аватара переданы невалидные данные.',
         });
-      } else if (error.name === "CastError") {
+      } else if (error.name === 'CastError') {
         res.status(404).send({
-          message: `Пользователь с таким _id не найден.`,
+          message: 'Пользователь с таким _id не найден.',
         });
       } else {
         res.status(500).send({
