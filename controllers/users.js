@@ -16,13 +16,13 @@ module.exports.getUserById = (req, res) => {
     .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((error) => {
-      if (error.name === "DocumentNotFoundError") {
+      if (error.name === "CastError") {
         res.status(400).send({
-          message: `Передан некорректный _id пользователя.`,
-        });
-      } else if (error.name === "CastError") {
-        res.status(404).send({
           message: `Пользователь с таким _id не найден.`,
+        });
+      } else if (error.name === "DocumentNotFoundError") {
+        res.status(404).send({
+          message: `Передан некорректный _id пользователя.`,
         });
       } else {
         res.status(500).send({
