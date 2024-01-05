@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 module.exports.getUserList = (req, res) => {
@@ -41,28 +42,29 @@ module.exports.createUser = (req, res) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  User.create({
-    name, about, avatar, email, password,
-  })
-    .then((user) => {
-      const userId = user._id.toString();
-      res.status(201).send({
-        data: {
-          name, about, avatar, _id: userId, password,
-        },
-      });
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
     })
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status(400).send({
-          message: 'При создании пользователя переданы невалидные данные.',
+      .then((user) => {
+        const userId = user._id.toString();
+        res.status(201).send({
+          data: {
+            name, about, avatar, _id: userId, password,
+          },
         });
-      } else {
-        res.status(500).send({
-          message: `Произошла ошибка. Детали: ${error.message}`,
-        });
-      }
-    });
+      })
+      .catch((error) => {
+        if (error.name === 'ValidationError') {
+          res.status(400).send({
+            message: 'При создании пользователя переданы невалидные данные.',
+          });
+        } else {
+          res.status(500).send({
+            message: `Произошла ошибка. Детали: ${error.message}`,
+          });
+        }
+      }));
 };
 
 module.exports.updateUserInfo = (req, res) => {
