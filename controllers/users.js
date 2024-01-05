@@ -143,7 +143,7 @@ module.exports.login = (req, res) => {
       if (!matched) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
-      res.send({ message: 'Всё верно!' });
+      return res.send({ message: 'Всё верно!' });
     })
     .catch((err) => res
       .status(401)
