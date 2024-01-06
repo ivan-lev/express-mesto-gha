@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const userRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const pageNotFound = require('./routes/page-not-found');
-const { login } = require('./controllers/users');
+const { createUser, login } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 
@@ -27,6 +27,7 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
+app.post('/signup', createUser);
 app.post('/signin', login);
 app.use('*', pageNotFound);
 
