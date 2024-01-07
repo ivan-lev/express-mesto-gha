@@ -29,9 +29,21 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndDelete({ _id: req.params.cardId })
+  const currentUserId = req.user._id;
+
+  // ищем карточку, возвращаем _id владельца и сравниваем с id пользователя
+  Card.findById({ _id: req.params.cardId }, { owner: 1 })
     .orFail()
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      // если _id не совпадают, то отправляем ошибку
+      if (currentUserId.toString() !== card.owner.toString()) {
+        return res.status(403).send('Отсутствуют права для удаления карточки');
+      }
+      // если совпадают, то удаляем карточку
+      return Card.findByIdAndDelete({ _id: req.params.cardId })
+        .then(() => res.send({ data: card }))
+        .catch((error) => res.status(500).send({ message: `Произошла ошибка. Детали: ${error}` }));
+    })
     .catch((error) => {
       if (error.name === 'CastError') {
         res
@@ -43,6 +55,22 @@ module.exports.deleteCard = (req, res) => {
         res.status(500).send({ message: `Произошла ошибка. Детали: ${error}` });
       }
     });
+
+  // старый код без проверки
+  // Card.findByIdAndDelete({ _id: req.params.cardId })
+  //   .orFail()
+  //   .then((card) => res.send({ data: card }))
+  //   .catch((error) => {
+  //     if (error.name === 'CastError') {
+  //       res
+  //         .status(400)
+  //         .send({ message: 'Передан некорректный _id карточки для удаления' });
+  //     } else if (error.name === 'DocumentNotFoundError') {
+  //       res.status(404).send({ message: 'Карточка с таким _id не найдена' });
+  //     } else {
+  //       res.status(500).send({ message: `Произошла ошибка. Детали: ${error}` });
+  //     }
+  //   });
 };
 
 module.exports.likeCard = (req, res) => {
