@@ -144,22 +144,29 @@ module.exports.login = (req, res) => {
     .catch((err) => res
       .status(401)
       .send({ message: err.message }));
+};
 
-  // User.findOne({ email })
-  //   .then((user) => {
-  //     if (!user) {
-  //       return Promise.reject(new Error('Неправильные почта или пароль'));
-  //     }
+module.exports.getUserInfo = (req, res) => {
+  const currentUserId = req.user._id;
 
-  //     return bcrypt.compare(password, user.password);
-  //   })
-  //   .then((matched) => {
-  //     if (!matched) {
-  //       return Promise.reject(new Error('Неправильные почта или пароль'));
-  //     }
-  //     return res.send({ message: 'Всё верно!' });
-  //   })
-  //   .catch((err) => res
-  //     .status(401)
-  //     .send({ message: err.message }));
+  User.findById(currentUserId, {
+    _id: 1, name: 1, about: 1, avatar: 1,
+  })
+    .orFail()
+    .then((user) => res.send({ data: user }))
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(400).send({
+          message: 'Пользователь с таким _id не найден.',
+        });
+      } else if (error.name === 'DocumentNotFoundError') {
+        res.status(404).send({
+          message: 'Передан некорректный _id пользователя.',
+        });
+      } else {
+        res.status(500).send({
+          message: `Произошла ошибка. Детали: ${error.message}`,
+        });
+      }
+    });
 };
