@@ -1,9 +1,11 @@
 const { celebrate, Joi } = require('celebrate');
 
+const linkRegEx = /(https?:\/\/)(www\.)?[\w-]+\.[a-z]{2,6}[\w\-._~:/?#[\]@!$&'()*+,;=]*/;
+
 module.exports.validateJoiCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().uri().required(),
+    link: Joi.string().uri().required().pattern(linkRegEx),
   }),
 });
 
