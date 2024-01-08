@@ -9,7 +9,7 @@ const ConflictError = require('../errors/conflict-error');
 module.exports.getUserList = (req, res, next) => {
   // найти всех пользователей и вернуть определённые поля
   User.find({}, {
-    _id: 1, name: 1, about: 1, avatar: 1,
+    _id: 1, name: 1, about: 1, avatar: 1, email: 1,
   })
     .then((users) => res.send(users))
     .catch((error) => next(error));
