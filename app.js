@@ -6,12 +6,14 @@ const { errors } = require('celebrate');
 
 const { validateJoiSignup, validateJoiSignin } = require('./middlewares/joi-users-validation');
 
+const { createUser, login } = require('./controllers/users');
+
+const auth = require('./middlewares/auth');
 const userRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const pageNotFound = require('./routes/page-not-found');
 
-const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
+const pageNotFound = require('./routes/page-not-found');
+const { errorHandler } = require('./middlewares/error-handler');
 
 const { PORT = 3000 } = process.env;
 
@@ -44,19 +46,23 @@ app.use('*', pageNotFound);
 // миддлвэр для обработки ошибок celebrate
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  // ставим для непредвиденной ошибки статус 500
-  const { statusCode = 500, message } = err;
+// хэндлер всех ошибок
+app.use(errorHandler);
 
-  res
-    .status(statusCode)
-    .send({
-      // если статус 500, генерируем сообщение сами
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-});
+// app.use((err, req, res, next) => {
+//   // ставим для непредвиденной ошибки статус 500
+//   const { statusCode = 500, message } = err;
+
+//   res
+//     .status(statusCode)
+//     .send({
+//       // если статус 500, генерируем сообщение сами
+//       message: statusCode === 500
+//         ? 'На сервере произошла ошибка'
+//         : message,
+//     });
+//   next();
+// });
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
