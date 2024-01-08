@@ -1,12 +1,12 @@
 const { celebrate, Joi } = require('celebrate');
 
-const avatarRegEx = /https?:\/\/(w{3}\.)?[\d\w-]+\.(\w)+\/?[\w\W]+/;
+const avatarRegEx = /(https?:\/\/)(www\.)?[\w-]+\.[a-z]{2,6}[\w\-._~:/?#[\]@!$&'()*+,;=]*/;
 
 module.exports.validateJoiSignup = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().uri().pattern(avatarRegEx),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
   }),
@@ -40,6 +40,3 @@ module.exports.validateJoiUpdateUserAvatar = celebrate({
       .pattern(avatarRegEx),
   }),
 });
-
-// /https?:\/\/(w{3}\.)?[\d\w-]+\.(\w+\/?){1,}/g
-// /https?:\/\/(w{3}\.)?[\d\w-]+\.(\w)+\/?[\w\W\/]+/g
