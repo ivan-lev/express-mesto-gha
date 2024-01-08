@@ -56,7 +56,7 @@ module.exports.createUser = (req, res, next) => {
         const userId = user._id.toString();
         res.status(201).send({
           data: {
-            name, about, avatar, _id: userId, password,
+            name, about, avatar, _id: userId,
           },
         });
       })
