@@ -1,34 +1,35 @@
 const Card = require('../models/card');
 
-module.exports.getCardsList = (req, res) => {
+const NotFoundError = require('../errors/not-found-error');
+const ValidationError = require('../errors/validation-error');
+const RightsError = require('../errors/rights-error');
+
+module.exports.getCardsList = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((error) => {
-      res.status(500).send({
-        message: `Произошла ошибка получения карточек. Детали: ${error.message}`,
-      });
-    });
+    .catch((error) => next(error));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link, owner = req.user._id } = req.body;
 
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send({ data: card }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({
-          message: 'При создании карточки переданы невалидные данные.',
-        });
-      } else {
-        res.status(500).send({
-          message: `Произошла ошибка. Детали: ${error.message}`,
-        });
+        return next(new ValidationError('При создании карточки переданы невалидные данные.'));
+        // res.status(400).send({
+        //   message: 'При создании карточки переданы невалидные данные.',
+        // });
       }
+      // res.status(500).send({
+      //   message: `Произошла ошибка. Детали: ${error.message}`,
+      // });
+      return next(error);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const currentUserId = req.user._id;
 
   // ищем карточку, возвращаем _id владельца и сравниваем с id пользователя
@@ -37,23 +38,26 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => {
       // если _id не совпадают, то отправляем ошибку
       if (currentUserId.toString() !== card.owner.toString()) {
-        return res.status(403).send('Отсутствуют права для удаления карточки');
+        return next(new RightsError('Отсутствуют права для удаления карточки.'));
+        // res.status(403).send('Отсутствуют права для удаления карточки');
       }
       // если совпадают, то удаляем карточку
       return Card.findByIdAndDelete({ _id: req.params.cardId })
         .then(() => res.send({ data: card }))
-        .catch((error) => res.status(500).send({ message: `Произошла ошибка. Детали: ${error}` }));
+        .catch((error) => next(error));
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res
-          .status(400)
-          .send({ message: 'Передан некорректный _id карточки для удаления' });
-      } else if (error.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Карточка с таким _id не найдена' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка. Детали: ${error}` });
+        return next(new ValidationError('Передан некорректный _id карточки для удаления.'));
+        // res
+        //   .status(400)
+        //   .send({ message: 'Передан некорректный _id карточки для удаления' });
       }
+      if (error.name === 'DocumentNotFoundError') {
+        return next(new NotFoundError('Карточка с таким _id не найдена.'));
+        // res.status(404).send({ message: 'Карточка с таким _id не найдена' });
+      }
+      return next(error);
     });
 
   // старый код без проверки
@@ -73,7 +77,7 @@ module.exports.deleteCard = (req, res) => {
   //   });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -85,18 +89,22 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(400).send({ message: 'Передан некорректный _id карточки' });
-      } else if (error.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Карточка с таким _id не найдена.' });
-      } else {
-        res
-          .status(500)
-          .send({ message: `Произошла ошибка. Детали: ${error.message}` });
+        return next(new ValidationError('Передан некорректный _id карточки.'));
+        // res.status(400).send({ message: 'Передан некорректный _id карточки' });
       }
+
+      if (error.name === 'DocumentNotFoundError') {
+        return next(new NotFoundError('Карточка с таким _id не найдена.'));
+        // res.status(404).send({ message: 'Карточка с таким _id не найдена.' });
+      }
+      // res
+      //   .status(500)
+      //   .send({ message: `Произошла ошибка. Детали: ${error.message}` });
+      return next(error);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -106,13 +114,17 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(400).send({ message: 'Передан некорректный _id карточки' });
-      } else if (error.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Карточка с таким _id не найдена.' });
-      } else {
-        res
-          .status(500)
-          .send({ message: `Произошла ошибка. Детали: ${error.message}` });
+        return next(new ValidationError('Передан некорректный _id карточки.'));
+        // res.status(400).send({ message: 'Передан некорректный _id карточки' });
       }
+
+      if (error.name === 'DocumentNotFoundError') {
+        return next(new NotFoundError('Карточка с таким _id не найдена.'));
+        // res.status(404).send({ message: 'Карточка с таким _id не найдена.' });
+      }
+      // res
+      //   .status(500)
+      //   .send({ message: `Произошла ошибка. Детали: ${error.message}` });
+      return next(error);
     });
 };
