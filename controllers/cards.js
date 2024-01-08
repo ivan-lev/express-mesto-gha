@@ -18,13 +18,8 @@ module.exports.createCard = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         return next(new ValidationError('При создании карточки переданы невалидные данные.'));
-        // res.status(400).send({
-        //   message: 'При создании карточки переданы невалидные данные.',
-        // });
       }
-      // res.status(500).send({
-      //   message: `Произошла ошибка. Детали: ${error.message}`,
-      // });
+
       return next(error);
     });
 };
@@ -39,7 +34,6 @@ module.exports.deleteCard = (req, res, next) => {
       // если _id не совпадают, то отправляем ошибку
       if (currentUserId.toString() !== card.owner.toString()) {
         return next(new RightsError('Отсутствуют права для удаления карточки.'));
-        // res.status(403).send('Отсутствуют права для удаления карточки');
       }
       // если совпадают, то удаляем карточку
       return Card.findByIdAndDelete({ _id: req.params.cardId })
@@ -49,32 +43,14 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         return next(new ValidationError('Передан некорректный _id карточки для удаления.'));
-        // res
-        //   .status(400)
-        //   .send({ message: 'Передан некорректный _id карточки для удаления' });
       }
+
       if (error.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Карточка с таким _id не найдена.'));
-        // res.status(404).send({ message: 'Карточка с таким _id не найдена' });
       }
+
       return next(error);
     });
-
-  // старый код без проверки
-  // Card.findByIdAndDelete({ _id: req.params.cardId })
-  //   .orFail()
-  //   .then((card) => res.send({ data: card }))
-  //   .catch((error) => {
-  //     if (error.name === 'CastError') {
-  //       res
-  //         .status(400)
-  //         .send({ message: 'Передан некорректный _id карточки для удаления' });
-  //     } else if (error.name === 'DocumentNotFoundError') {
-  //       res.status(404).send({ message: 'Карточка с таким _id не найдена' });
-  //     } else {
-  //       res.status(500).send({ message: `Произошла ошибка. Детали: ${error}` });
-  //     }
-  //   });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -90,16 +66,12 @@ module.exports.likeCard = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         return next(new ValidationError('Передан некорректный _id карточки.'));
-        // res.status(400).send({ message: 'Передан некорректный _id карточки' });
       }
 
       if (error.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Карточка с таким _id не найдена.'));
-        // res.status(404).send({ message: 'Карточка с таким _id не найдена.' });
       }
-      // res
-      //   .status(500)
-      //   .send({ message: `Произошла ошибка. Детали: ${error.message}` });
+
       return next(error);
     });
 };
@@ -115,16 +87,12 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         return next(new ValidationError('Передан некорректный _id карточки.'));
-        // res.status(400).send({ message: 'Передан некорректный _id карточки' });
       }
 
       if (error.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Карточка с таким _id не найдена.'));
-        // res.status(404).send({ message: 'Карточка с таким _id не найдена.' });
       }
-      // res
-      //   .status(500)
-      //   .send({ message: `Произошла ошибка. Детали: ${error.message}` });
+
       return next(error);
     });
 };

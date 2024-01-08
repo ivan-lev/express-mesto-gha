@@ -24,20 +24,11 @@ module.exports.getUserById = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         return next(new ValidationError('Пользователь с таким _id не найден.'));
-        // res.status(400).send({
-        //   message: 'Пользователь с таким _id не найден.',
-        // });
       }
 
       if (error.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Передан некорректный _id пользователя.'));
-        // res.status(404).send({
-        //   message: 'Передан некорректный _id пользователя.',
-        // });
       }
-      // res.status(500).send({
-      //   message: `Произошла ошибка. Детали: ${error.message}`,
-      // });
 
       return next(error);
     });
@@ -63,17 +54,11 @@ module.exports.createUser = (req, res, next) => {
       .catch((error) => {
         if (error.name === 'ValidationError') {
           return next(new ValidationError('При создании пользователя переданы невалидные данные.'));
-          // res.status(400).send({
-          //   message: 'При создании пользователя переданы невалидные данные.',
-          // });
         }
 
         if (error.code === 11000) {
           return next(new ConflictError('Такой пользователь уже существует.'));
         }
-        // res.status(500).send({
-        //   message: `Произошла ошибка. Детали: ${error.message}`,
-        // });
 
         return next(error);
       }));
@@ -96,20 +81,11 @@ module.exports.updateUserInfo = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         return next(new ValidationError('При обновлении профиля переданы невалидные данные.'));
-        // res.status(400).send({
-        //   message: 'При обновлении профиля переданы невалидные данные.',
-        // });
       }
 
       if (error.name === 'CastError') {
         return next(new NotFoundError('Пользователь с таким _id не найден.'));
-        // res.status(404).send({
-        //   message: 'Пользователь с таким _id не найден.',
-        // });
       }
-      // res.status(500).send({
-      //   message: `Произошла ошибка. Детали: ${error.message}`,
-      // });
 
       return next(error);
     });
@@ -131,20 +107,11 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         return next(new ValidationError('При обновлении аватара переданы невалидные данные.'));
-        // res.status(400).send({
-        //   message: 'При обновлении аватара переданы невалидные данные.',
-        // });
       }
 
       if (error.name === 'CastError') {
         return next(new NotFoundError('Пользователь с таким _id не найден.'));
-        // res.status(404).send({
-        //   message: 'Пользователь с таким _id не найден.',
-        // });
       }
-      // res.status(500).send({
-      //   message: `Произошла ошибка. Детали: ${error.message}`,
-      // });
 
       return next(error);
     });
@@ -152,30 +119,6 @@ module.exports.updateUserAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
-  // return User.findOne({ email }).select('+password')
-  //   .then((user) => {
-  //     if (!user) {
-  //       return next(new AuthorizationError('Неправильные почта или пароль'));
-  //     }
-  //     return user;
-  //   })
-  //   .then((user) => {
-  //     bcrypt.compare(password, user.password)
-  //       .then((matched) => {
-  //         if (!matched) {
-  //           return next(new AuthorizationError('Неправильные почта или пароль'));
-  //         }
-
-  //         const token = jwt.sign(
-  //           { _id: user._id },
-  //           'secret-key',
-  //           { expiresIn: '7d' },
-  //         );
-  //         res.send({ token });
-  //       });
-  //   })
-  //   .catch((error) => next(error));
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -200,19 +143,12 @@ module.exports.getUserInfo = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         return next(new ValidationError('Передан некорректный _id пользователя.'));
-        // res.status(400).send({
-        //   message: 'Передан некорректный _id пользователя.',
-        // });
       }
+
       if (error.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Пользователь с таким _id не найден.'));
-        // res.status(404).send({
-        //   message: 'Пользователь с таким _id не найден.',
-        // });
       }
-      // res.status(500).send({
-      //   message: `Произошла ошибка. Детали: ${error.message}`,
-      // });
+
       return next(error);
     });
 };
