@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const { errors } = require('celebrate');
+
+const { validateJoiSignup, validateJoiSignin } = require('./middlewares/joi-users-validation');
 
 const userRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -29,14 +32,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
 
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.post('/signup', validateJoiSignup, createUser);
+app.post('/signin', validateJoiSignin, login);
 
 app.use(auth);
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
 
 app.use('*', pageNotFound);
+
+// миддлвэр для обработки ошибок celebrate
+app.use(errors());
 
 app.use((err, req, res, next) => {
   // ставим для непредвиденной ошибки статус 500
