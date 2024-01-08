@@ -25,13 +25,19 @@ module.exports.validateJoiGetUserById = celebrate({
 
 module.exports.validateJoiUpdateUserInfo = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
   }),
 });
 
 module.exports.validateJoiUpdateUserAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri(),
+    avatar: Joi.string()
+      .uri()
+      .required()
+      .pattern(/https?:\/\/(w{3}\.)?[\d\w-]+\.(\w)+\/?[\w\W]+/g),
   }),
 });
+
+// /https?:\/\/(w{3}\.)?[\d\w-]+\.(\w+\/?){1,}/g
+// /https?:\/\/(w{3}\.)?[\d\w-]+\.(\w)+\/?[\w\W\/]+/g
