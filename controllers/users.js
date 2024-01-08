@@ -193,7 +193,7 @@ module.exports.getUserInfo = (req, res, next) => {
   const currentUserId = req.user._id;
 
   User.findById(currentUserId, {
-    _id: 1, name: 1, about: 1, avatar: 1,
+    _id: 1, name: 1, about: 1, avatar: 1, email: 1,
   })
     .orFail()
     .then((user) => res.send(user))
