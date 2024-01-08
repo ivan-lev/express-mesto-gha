@@ -196,7 +196,7 @@ module.exports.getUserInfo = (req, res, next) => {
     _id: 1, name: 1, about: 1, avatar: 1,
   })
     .orFail()
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ user }))
     .catch((error) => {
       if (error.name === 'CastError') {
         return next(new ValidationError('Передан некорректный _id пользователя.'));
