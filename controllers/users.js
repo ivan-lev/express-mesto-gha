@@ -11,7 +11,7 @@ module.exports.getUserList = (req, res, next) => {
   User.find({}, {
     _id: 1, name: 1, about: 1, avatar: 1,
   })
-    .then((user) => res.send({ data: user }))
+    .then((users) => res.send(users))
     .catch((error) => next(error));
 };
 
