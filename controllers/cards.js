@@ -36,7 +36,7 @@ module.exports.deleteCard = (req, res, next) => {
         return next(new RightsError('Отсутствуют права для удаления карточки.'));
       }
       // если совпадают, то удаляем карточку
-      return Card.findByIdAndDelete({ _id: req.params.cardId })
+      return Card.deleteOne(card)
         .then(() => res.send({ data: card }))
         .catch((error) => next(error));
     })
