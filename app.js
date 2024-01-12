@@ -5,6 +5,8 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
 
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
 const { validateJoiSignup, validateJoiSignin } = require('./middlewares/joi-users-validation');
 
 const { createUser, login } = require('./controllers/users');
@@ -24,6 +26,8 @@ const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
+app.use(requestLogger);
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
@@ -37,6 +41,8 @@ app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
 
 app.use('*', pageNotFound);
+
+app.use(errorLogger);
 
 // миддлвэр для обработки ошибок celebrate
 app.use(errors());
