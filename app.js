@@ -4,11 +4,12 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
+const cors = require('cors');
 require('dotenv').config();
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { validateJoiSignup, validateJoiSignin } = require('./middlewares/joi-users-validation');
-const { cors } = require('./middlewares/cors');
+// const { cors } = require('./middlewares/cors');
 
 const { createUser, login } = require('./controllers/users');
 
@@ -27,12 +28,12 @@ const {
 } = process.env;
 
 const app = express();
+app.use(cors());
 
 mongoose.connect(DB_URL);
 
 app.use(requestLogger);
 
-app.use(cors);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
